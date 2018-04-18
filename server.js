@@ -1,8 +1,6 @@
 
 const express = require('express');
 const bodyParser = require('body-parser');
-const session = require('express-session');
-const RedisStore = require('connect-redis')(session);
 
 const PORT = process.env.PORT || 3003;
 const Tasks = require('./db/models/Tasks');
@@ -12,12 +10,6 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(session({
-  store: new RedisStore(),
-  secret: 'zomg My Sekret Here',
-  resave: false,
-  saveUninitialized: true
-}))
 
 app.get('/', (req, res) => {
   res.send('sanity check')
