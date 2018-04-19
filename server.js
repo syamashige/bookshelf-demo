@@ -1,19 +1,32 @@
+const PORT = process.env.PORT || 3003;
 
 const express = require('express');
 const bodyParser = require('body-parser');
+const session = require('express-session');
+const RedisStore = require('connect-redis')(session)
+const passport = require('passport');
 
-const PORT = process.env.PORT || 3003;
 const Tasks = require('./db/models/Tasks');
 const Users = require('./db/models/Users');
+const AuthRoutes = require('./routes/auth')
 
 const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(session({
+  store: new RedisStore(),
+  secret: 'oompah loompah',
+  resave: false,
+  saveUninitialized: true
+}))
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.get('/', (req, res) => {
   res.send('sanity check')
 })
+app.use('/api', AuthRoutes);
 
 // get all users
 app.get('/api/users', (req, res) => {
