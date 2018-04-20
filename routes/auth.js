@@ -2,6 +2,9 @@ const router = require('express').Router();
 const Users = require('../db/models/Users');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
+const bcrypt = require('bcrypt');
+
+
 
 
 passport.serializeUser( (user, done) => {
@@ -34,22 +37,43 @@ passport.use(new LocalStrategy({usernameField: 'email'}, (email, password, done)
     .then( user => {
       console.log('user in local strategy', user)
       user = user.toJSON();
-      if (user.password === password) {
-        done(null, user )
-      } else {
-        done(null, false)
-      }
+      // if (user.password === password) {
+      //   done(null, user )
+      // } else {
+      //   done(null, false)
+      // }
+      bcrypt.compare(password, user.password)
+        .then( res => {
+          if (res) {
+            done(null, user)
+          } else {
+            done(null, false)
+          }
+        })
     })
     .catch( err => {
       done(null, false)
     })
 }))
 
+
+const SALT_ROUND = 12
+
 router.post('/auth/register', (req, res) => {
+
   const { email, password } = req.body;
-  Users
-    .forge({email, password})
-    .save()
+
+  bcrypt.genSalt(12)
+    .then( salt => {
+      console.log('salt', salt)
+      return bcrypt.hash(password, salt)
+    })
+    .then( hash => {
+      console.log('hash', hash)
+      return Users 
+                .forge({email, password: hash})
+                .save()
+    })
     .then( user => {
       user = user.toJSON()
       res.json(user)
@@ -64,14 +88,18 @@ router.post('/auth/register', (req, res) => {
 })
 
 router.post('/auth/login', passport.authenticate('local', {failureRedirect: '/'}), (req, res) => {
-res.send('YAY IM IN!!!!')
+  // grab the user on record
+  // compare req.body.password to password on reocrd
+
+  res.send('YAY IM IN!!!!')
 })
 
 router.post('/auth/logout', (req, res) => {
-
+  req.logout()
+  res.redirect('/')
 })
 
-router.get('/auth/secret',isAuthenticated, (req, res) => {
+router.get('/auth/secret',isAuthenticated, (req, res) => { 
   res.send('YOU HAVE FOUND DA SEKRET')
 })
 

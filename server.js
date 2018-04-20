@@ -18,7 +18,7 @@ app.use(session({
   store: new RedisStore(),
   secret: 'oompah loompah',
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: false
 }))
 app.use(passport.initialize());
 app.use(passport.session());
