@@ -73,7 +73,7 @@ router.post('/auth/register', (req, res) => {
     })
     .then( user => {
       user = user.toJSON()
-      res.json(user)
+      res.json(user) // Never send the entire user object back to client! It has their password!
       // res.sendStatus(200)
       // res.redirect('/api/auth/secret')
     })
