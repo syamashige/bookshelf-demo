@@ -2,7 +2,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
-const PORT = process.env.PORT || 3003;
+const PORT = process.env.EXPRESS_CONTAINER_PORT;
 const Tasks = require('./db/models/Tasks');
 const Users = require('./db/models/Users');
 
