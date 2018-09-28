@@ -3,6 +3,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const PORT = process.env.EXPRESS_CONTAINER_PORT;
+
+// Two tables: Tasks & Users
 const Tasks = require('./db/models/Tasks');
 const Users = require('./db/models/Users');
 
